@@ -1,0 +1,5 @@
+targets:
+  - ipAddress: IP address
+    userid: user
+    password: password
+    location: Country/City
