@@ -37,6 +37,7 @@ var (
 // DS8kCollector implements the prometheus.Collecotor interface
 type DS8kCollector struct {
 	targets    []utils.Targets
+	location   string
 	Collectors map[string]Collector
 }
 
@@ -64,7 +65,7 @@ func registerCollector(collector string, isDefaultEnabled bool, factory func() (
 }
 
 // newDS8kCollector creates a new DS8k Collector.
-func NewDS8kCollector(targets []utils.Targets) (*DS8kCollector, error) {
+func NewDS8kCollector(targets []utils.Targets, location string) (*DS8kCollector, error) {
 	collectors := make(map[string]Collector)
 	// log.Infof("Enabled collectors:")
 	for key, enabled := range collectorState {
@@ -77,7 +78,7 @@ func NewDS8kCollector(targets []utils.Targets) (*DS8kCollector, error) {
 			collectors[key] = collector
 		}
 	}
-	return &DS8kCollector{targets, collectors}, nil
+	return &DS8kCollector{targets, location, collectors}, nil
 }
 
 // Describe implements the Prometheus.Collector interface.
@@ -113,7 +114,7 @@ func (c *DS8kCollector) collectForHost(host utils.Targets, ch chan<- prometheus.
 		UserName:  host.Userid,
 		Password:  host.Password,
 		IpAddress: host.IpAddress,
-		Location:  host.Location,
+		Location:  c.location,
 	}
 
 	defer func() {

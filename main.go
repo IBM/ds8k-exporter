@@ -23,6 +23,7 @@ var (
 	username               = kingpin.Flag("web.user", "Username to use when connecting to DS8K RESTful API").String()
 	passwd                 = kingpin.Flag("web.passwd", "Passwd to use when connecting to DS8K RESTful API").String()
 	// maxRequests            = kingpin.Flag("web.max-requests", "Maximum number of parallel scrape requests. Use 0 to disable.").Default("40").Int()
+	location        = kingpin.Flag("location", "The location or timezone of the storage device, for example: America/New_York").Default("").String()
 	cfg             *utils.Config
 	enableCollector bool = true
 )
@@ -44,12 +45,16 @@ func main() {
 
 	//Bail early if the config is bad.
 	log.Infoln("Loading config from", *configFile)
-	// var err error
-	c, err := utils.GetConfig(*configFile)
+	var err error
+	if *location == "" {
+		log.Fatalln("Please input the location of ds8k devices.")
+	}
+
+	cfg, err = utils.GetConfig(*configFile)
+
 	if err != nil {
 		log.Fatalf("Error parsing config file: %s", err)
 	}
-	cfg = c
 
 	log.Infoln("Starting ds8k_exporter", version.Info())
 	log.Infoln("Build context", version.BuildContext())
@@ -123,7 +128,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) innerHandler(targets ...utils.Targets) (http.Handler, error) {
 	registry := prometheus.NewRegistry()
-	dsc, err := collector.NewDS8kCollector(targets) //new a DS8k Collector
+	dsc, err := collector.NewDS8kCollector(targets, *location) //new a DS8k Collector
 	if err != nil {
 		log.Fatalf("Couldn't create collector: %s", err)
 	}
