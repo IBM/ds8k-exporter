@@ -64,13 +64,18 @@ func main() {
 	http.Handle(*metricsPath, newHandler(!*disableExporterMetrics))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`<html>
+		if r.Method == "GET" {
+			w.Write([]byte(`<html>
 			<head><title>ds8k exporter</title></head>
 			<body>
 				<h1>ds8k exporter</h1>
 				<p><a href='` + *metricsPath + `'>Metrics</a></p>
 			</body>
 		</html>`))
+		} else {
+			http.Error(w, "403 Forbidden", 403)
+		}
+
 	})
 	log.Infof("Listening for %s on %s\n", *metricsPath, *listenAddress)
 	log.Fatal(http.ListenAndServe(*listenAddress, nil))
@@ -78,20 +83,17 @@ func main() {
 
 func targetsForRequest(r *http.Request) ([]utils.Targets, error) {
 	reqTarget := r.URL.Query().Get("target")
-	// var targets []string
 	if reqTarget == "" {
-		// targets = strings.Split(*hosts, ",")
 		return cfg.Targets, nil
 	}
 
 	for _, t := range cfg.Targets {
 		if t.IpAddress == reqTarget {
-			// return []string{t}, nil
 			return []utils.Targets{t}, nil
 		}
 	}
 
-	return nil, fmt.Errorf("the target '%s' is not defined in the configuration file", reqTarget)
+	return nil, fmt.Errorf("The target '%s' is not defined in the configuration file", reqTarget)
 }
 
 func newHandler(includeExporterMetrics bool) *handler {
@@ -112,18 +114,24 @@ func newHandler(includeExporterMetrics bool) *handler {
 
 // ServeHTTP implements http.Handler.
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	targets, err := targetsForRequest(r)
-	if err != nil {
-		http.Error(w, err.Error(), 400)
+	if r.Method == "GET" {
+		targets, err := targetsForRequest(r)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		handler, err := h.innerHandler(targets...)
+		if err != nil {
+			log.Warnln("Couldn't create  metrics handler:", err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf("Couldn't create  metrics handler: %s", err)))
+			return
+		}
+		handler.ServeHTTP(w, r)
+	} else {
+		http.Error(w, "403 Forbidden", 403)
 	}
-	handler, err := h.innerHandler(targets...)
-	if err != nil {
-		log.Warnln("Couldn't create  metrics handler:", err)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("Couldn't create  metrics handler: %s", err)))
-		return
-	}
-	handler.ServeHTTP(w, r)
+
 }
 
 func (h *handler) innerHandler(targets ...utils.Targets) (http.Handler, error) {
