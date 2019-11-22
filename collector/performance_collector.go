@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ds8k-exporter/utils"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/log"
 	"github.com/tidwall/gjson"
+	"github.ibm.com/ZaaS/ds8k-exporter/utils"
 )
 
 const (
@@ -95,7 +95,7 @@ func (c *performanceCollector) Collect(dClient utils.DS8kClient, ch chan<- prome
 	for _, system := range systems {
 		serial_number := system.Get("sn").String()
 		location, err := time.LoadLocation(dClient.Location)
-                log.Debugln("The timezone of location is %s", location)
+		log.Debugln("The timezone of location is %s", location)
 		//Examples of dClient.Location: America/New_York ; America/Los_Angeles
 		if err != nil {
 			log.Errorln("Loading location of device failed: ", err)

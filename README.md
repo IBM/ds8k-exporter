@@ -34,20 +34,25 @@ collects metrics from [IBM System Storage DS8000](ihttps://www.ibm.com/support/k
         ``` docker build -t ds8k-exporter . ```
 * Running:
     * Run locally
-        ```./ds8k-exporter --config.file=/etc/ds8k-exporter/ds8k.yaml```
+        ```./ds8k-exporter --config.file=/etc/ds8k-exporter/ds8k.yaml --location="America/New_York"```
 
     * Run as docker image
-        ```docker run -it -d -p 9710:9710 -v /etc/ds8k-exporter/ds8k.yaml:/etc/ds8k-exporter/ds8k.yaml --name ds8k-exporter ds8k-exporter --config.file=/etc/ds8k-exporter/ds8k.yaml```
+        ```docker run -it -d -p 9710:9710 -v /etc/ds8k-exporter/ds8k.yaml:/etc/ds8k-exporter/ds8k.yaml --name ds8k-exporter ds8k-exporter --config.file=/etc/ds8k-exporter/ds8k.yaml --location="America/New_York"```
     * Visit http://localhost:9710/metrics
 
+    > The examples of location:
+       * America/New_York (for Ashburn Data Center)
+       * Europe//Paris (for Frankfurt Data Center)
+       * Australia/Sydney (for Sydney Data Center)
+       * America/Chicago (for Dallas Data Center)
+
 ## Configuration
-The ds8k-exporter reads from ds8k.yaml config file by default. Edit your config YAML file, Enter the IP address and location(example: America/New_York) of the storage device, your username and your password there.
+The ds8k-exporter reads from ds8k.yaml config file by default. Edit your config YAML file, Enter the IP address of the storage device, your username and your password there.
 ```
 targets:
   - ipAddress: IP address
     userid: user
     password: password
-    location: Country/City
 ```
 
 ## Exported Metrics
