@@ -1,10 +1,10 @@
 package collector
 
 import (
-	"github.com/ds8k-exporter/utils"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/log"
 	"github.com/tidwall/gjson"
+	"github.ibm.com/ZaaS/ds8k-exporter/utils"
 )
 
 const (

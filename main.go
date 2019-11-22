@@ -5,12 +5,12 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/ds8k-exporter/collector"
-	"github.com/ds8k-exporter/utils"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/log"
 	"github.com/prometheus/common/version"
+	"github.ibm.com/ZaaS/ds8k-exporter/collector"
+	"github.ibm.com/ZaaS/ds8k-exporter/utils"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

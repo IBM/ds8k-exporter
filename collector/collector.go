@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ds8k-exporter/utils"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/log"
+	"github.ibm.com/ZaaS/ds8k-exporter/utils"
 
 	// "github.com/tidwall/gjson"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
