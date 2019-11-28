@@ -22,13 +22,10 @@ collects metrics from [IBM System Storage DS8000](ihttps://www.ibm.com/support/k
         ```
         export GOPATH=your_gopath
         cd your_gopath
-        mkdir src
-        cd src
-        mkdir github.com
-        cd github.com
         git clone git@github.ibm.com:ZaaS/ds8k-exporter.git
         cd ds8k-exporter
         go build
+        go install (This step is recommended in order to easily copy ds8k-exporter binary package to Monitoring docker image)
         ```
     * Docker image
         ``` docker build -t ds8k-exporter . ```
